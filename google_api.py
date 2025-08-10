@@ -1,7 +1,5 @@
 import requests
 
-# Replace with your actual API key
-api_key = "AIzaSyATVIAaQEw9AM7vE5w_02vOibBWDQxbZ4s"
 
 # Endpoint URL
 url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
