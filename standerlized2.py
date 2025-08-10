@@ -708,50 +708,105 @@ class InteractiveColumnMapper:
         root.destroy()
         return output_path
     
-    def show_preview_dialog(self, column_mapping, unmapped_columns, mapping_scores):
-        """Show preview of column mappings before processing"""
+    def show_preview_dialog(self, df_formulas, column_mapping, unmapped_columns, mapping_scores):
+        """Show preview of column mappings, allow editing, and copy hyperlinks."""
         root = tk.Tk()
-        root.title("Column Mapping Preview")
-        root.geometry("800x600")
-        
-        proceed = [False]  # Use list to modify from inner function
-        
+        root.title("Column Mapping Preview & Edit")
+        root.geometry("850x650")
+
+        editable_mapping = column_mapping.copy()
+        proceed = [False]
+
         def on_proceed():
             proceed[0] = True
             root.quit()
-        
+
         def on_cancel():
             root.quit()
-        
-        # Create notebook for tabs
+
+        def on_edit(event):
+            """Handle editing of the 'Mapped To' column."""
+            item_id = mapped_tree.focus()
+            if not item_id:
+                return
+
+            item = mapped_tree.item(item_id)
+            original_col = item['values'][0]
+            
+            new_name = simpledialog.askstring(
+                "Edit Mapping",
+                f"Enter new standard name for '{original_col}':",
+                initialvalue=editable_mapping.get(original_col, "")
+            )
+
+            if new_name is not None:
+                editable_mapping[original_col] = new_name
+                mapped_tree.item(item_id, values=(original_col, new_name, "Manual Edit"))
+
+        def copy_hyperlink(event):
+            item_id = mapped_tree.focus()
+            if not item_id:
+                return
+
+            # Get the index of the selected row
+            item_index = mapped_tree.index(item_id)
+
+            item = mapped_tree.item(item_id)
+            original_col = item['values'][0]
+            mapped_col = item['values'][1]
+
+            if "link" in mapped_col.lower() or "url" in mapped_col.lower():
+                try:
+                    hyperlink = df_formulas.loc[item_index, original_col]
+                    root.clipboard_clear()
+                    root.clipboard_append(hyperlink)
+                    messagebox.showinfo("Copied", f"Copied to clipboard:\n{hyperlink}")
+                except (IndexError, KeyError):
+                    messagebox.showwarning("Empty Cell", f"The cell in column '{original_col}' at this row is empty or could not be found.")
+                except Exception as e:
+                    messagebox.showerror("Error", f"Could not copy link: {e}")
+            else:
+                messagebox.showinfo("Not a Link", "This column is not identified as a hyperlink column.")
+
+        def show_context_menu(event):
+            context_menu.post(event.x_root, event.y_root)
+
         notebook = ttk.Notebook(root)
         notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        
-        # Mapped columns tab
-        if column_mapping:
+
+        if editable_mapping:
             mapped_frame = ttk.Frame(notebook)
-            notebook.add(mapped_frame, text=f"Mapped Columns ({len(column_mapping)})")
-            
-            # Create treeview for mapped columns
+            notebook.add(mapped_frame, text=f"Mapped Columns ({len(editable_mapping)})")
+
+            instructions_frame = tk.Frame(mapped_frame)
+            instructions_frame.pack(pady=5)
+            tk.Label(instructions_frame, text="Double-click a row to edit.", font=("Arial", 9, "italic")).pack(side=tk.LEFT, padx=5)
+            tk.Label(instructions_frame, text="Right-click for options.", font=("Arial", 9, "italic")).pack(side=tk.LEFT, padx=5)
+
             columns = ("Original", "Mapped To", "Confidence")
             mapped_tree = ttk.Treeview(mapped_frame, columns=columns, show="headings", height=15)
-            
+
             for col in columns:
                 mapped_tree.heading(col, text=col)
-                mapped_tree.column(col, width=250)
-            
-            for original, mapped in column_mapping.items():
-                score = mapping_scores[original]
-                mapped_tree.insert("", tk.END, values=(original, mapped, f"{score:.1f}%"))
-            
-            # Add scrollbar
+                mapped_tree.column(col, width=270)
+
+            for original, mapped in editable_mapping.items():
+                score = mapping_scores.get(original, "N/A")
+                confidence = f"{score:.1f}%" if isinstance(score, (int, float)) else score
+                mapped_tree.insert("", tk.END, values=(original, mapped, confidence))
+
+            mapped_tree.bind("<Double-1>", on_edit)
+            mapped_tree.bind("<Button-3>", show_context_menu)
+
+            context_menu = tk.Menu(root, tearoff=0)
+            context_menu.add_command(label="Copy Hyperlink", command=lambda: copy_hyperlink(None))
+
             mapped_scrollbar = ttk.Scrollbar(mapped_frame, orient=tk.VERTICAL, command=mapped_tree.yview)
             mapped_tree.configure(yscrollcommand=mapped_scrollbar.set)
             
             mapped_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
             mapped_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        
-        # Unmapped columns tab
+
         if unmapped_columns:
             unmapped_frame = ttk.Frame(notebook)
             notebook.add(unmapped_frame, text=f"Unmapped Columns ({len(unmapped_columns)})")
@@ -765,8 +820,7 @@ class InteractiveColumnMapper:
             
             unmapped_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
             unmapped_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        
-        # Button frame
+
         button_frame = tk.Frame(root)
         button_frame.pack(pady=10)
         
@@ -774,8 +828,7 @@ class InteractiveColumnMapper:
                  bg="green", fg="white", font=("Arial", 10, "bold")).pack(side=tk.LEFT, padx=10)
         tk.Button(button_frame, text="Cancel", command=on_cancel).pack(side=tk.LEFT, padx=10)
         
-        # Summary label
-        summary_text = f"Ready to map {len(column_mapping)} columns"
+        summary_text = f"Ready to map {len(editable_mapping)} columns"
         if unmapped_columns:
             summary_text += f" ({len(unmapped_columns)} will remain unmapped)"
         
@@ -784,7 +837,7 @@ class InteractiveColumnMapper:
         root.mainloop()
         root.destroy()
         
-        return proceed[0]
+        return proceed[0], editable_mapping if proceed[0] else None
     
     def run_interactive(self):
         """Run the interactive version"""
@@ -823,10 +876,21 @@ class InteractiveColumnMapper:
         # Step 4: Load and analyze the file
         print("\nStep 4: Analyzing columns...")
         try:
-            df = pd.read_excel(input_file, sheet_name=selected_sheet)
-            column_mapping, unmapped_columns, mapping_scores = self.mapper.map_columns(df, threshold)
+            # Read with openpyxl to get formulas
+            import openpyxl
+            workbook = openpyxl.load_workbook(input_file, data_only=False)
+            sheet = workbook[selected_sheet]
+            data = []
+            for row in sheet.iter_rows(values_only=True):
+                data.append(list(row))
+            df_formulas = pd.DataFrame(data[1:], columns=data[0])
+
+            # Read with pandas for values
+            df_values = pd.read_excel(input_file, sheet_name=selected_sheet)
+
+            column_mapping, unmapped_columns, mapping_scores = self.mapper.map_columns(df_values, threshold)
             
-            print(f"Found {len(df.columns)} columns total")
+            print(f"Found {len(df_values.columns)} columns total")
             print(f"Mapped: {len(column_mapping)} columns")
             print(f"Unmapped: {len(unmapped_columns)} columns")
             
@@ -837,7 +901,9 @@ class InteractiveColumnMapper:
         
         # Step 5: Show preview and get confirmation
         print("\nStep 5: Showing mapping preview...")
-        if not self.show_preview_dialog(column_mapping, unmapped_columns, mapping_scores):
+        proceed, final_mapping = self.show_preview_dialog(df_formulas, column_mapping, unmapped_columns, mapping_scores)
+        
+        if not proceed:
             print("Operation cancelled by user.")
             return
         
@@ -856,17 +922,17 @@ class InteractiveColumnMapper:
         # Step 7: Process and save
         print("\nStep 7: Processing and saving...")
         try:
-            mapped_df = df.rename(columns=column_mapping)
+            mapped_df = df_values.rename(columns=final_mapping)
             mapped_df.to_excel(output_file, index=False)
             
             print(f"\n✅ SUCCESS!")
             print(f"Mapped file saved as: {output_file}")
-            print(f"Columns mapped: {len(column_mapping)}")
+            print(f"Columns mapped: {len(final_mapping)}")
             print(f"Threshold used: {threshold}%")
             
             messagebox.showinfo("Success", 
                               f"File processed successfully!\n\n"
-                              f"Mapped {len(column_mapping)} columns\n"
+                              f"Mapped {len(final_mapping)} columns\n"
                               f"Saved to: {os.path.basename(output_file)}")
             
         except Exception as e:
