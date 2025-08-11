@@ -1,0 +1,76 @@
+2025-08-11 08:28:26,009 - INFO - Initializing browser...
+2025-08-11 08:28:28,971 - INFO - Browser initialized successfully
+2025-08-11 08:28:28,974 - INFO - Loading page (attempt 1): https://www.sensitron.com/index.php?action=sic_fet
+2025-08-11 08:28:30,605 - INFO - Page loaded successfully
+2025-08-11 08:28:30,607 - INFO - Processing page 1
+2025-08-11 08:28:30,657 - INFO - Error parsing table 1 on page 1: Missing optional dependency 'lxml'.  Use pip or conda to install lxml.
+2025-08-11 08:28:30,696 - INFO - No more pages found
+2025-08-11 08:28:30,698 - INFO - Scraping completed. Processed 1 pages, extracted 0 tables
+2025-08-11 08:28:32,801 - INFO - Browser closed
+2025-08-11 08:29:27,254 - INFO - Initializing browser...
+2025-08-11 08:29:28,550 - INFO - Browser initialized successfully
+2025-08-11 08:29:28,552 - INFO - Loading page (attempt 1): https://www.sensitron.com/index.php?action=sic_fet
+2025-08-11 08:29:30,267 - INFO - Page loaded successfully
+2025-08-11 08:29:30,268 - INFO - Processing page 1
+2025-08-11 08:29:30,309 - INFO - Extracted table 1 from page 1 (5 rows)
+2025-08-11 08:29:30,335 - INFO - No more pages found
+2025-08-11 08:29:30,338 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 08:29:30,340 - INFO - Combined data: 5 total rows
+2025-08-11 08:29:30,342 - INFO - Error saving data: No module named 'openpyxl'
+2025-08-11 08:29:32,442 - INFO - Browser closed
+2025-08-11 08:30:11,275 - INFO - Initializing browser...
+2025-08-11 08:30:12,474 - INFO - Browser initialized successfully
+2025-08-11 08:30:12,474 - INFO - Loading page (attempt 1): https://www.sensitron.com/index.php?action=sic_fet
+2025-08-11 08:30:13,769 - INFO - Page loaded successfully
+2025-08-11 08:30:13,769 - INFO - Processing page 1
+2025-08-11 08:30:13,824 - INFO - Extracted table 1 from page 1 (5 rows)
+2025-08-11 08:30:13,858 - INFO - No more pages found
+2025-08-11 08:30:13,858 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 08:30:13,859 - INFO - Combined data: 5 total rows
+2025-08-11 08:30:14,037 - INFO - Excel file saved: output\scraped_tables.xlsx
+2025-08-11 08:30:16,120 - INFO - Browser closed
+2025-08-11 08:46:50,315 - INFO - Initializing browser...
+2025-08-11 08:46:51,733 - INFO - Browser initialized successfully
+2025-08-11 08:46:51,733 - INFO - Loading page (attempt 1): https://www.analog.com/en/parametricsearch/11070#/
+2025-08-11 08:46:52,885 - INFO - Page loaded successfully
+2025-08-11 08:46:52,886 - INFO - Processing page 1
+2025-08-11 08:46:52,992 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 08:46:53,020 - INFO - No more pages found
+2025-08-11 08:46:53,021 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 08:46:53,022 - INFO - Combined data: 25 total rows
+2025-08-11 08:46:53,245 - INFO - Error saving data: Writing to Excel with MultiIndex columns and no index ('index'=False) is not yet implemented.
+2025-08-11 08:46:55,336 - INFO - Browser closed
+2025-08-11 08:48:44,875 - INFO - Initializing browser...
+2025-08-11 08:48:46,091 - INFO - Browser initialized successfully
+2025-08-11 08:48:46,091 - INFO - Loading page (attempt 1): https://www.analog.com/en/parametricsearch/11070#/
+2025-08-11 08:48:47,066 - INFO - Page loaded successfully
+2025-08-11 08:48:47,068 - INFO - Processing page 1
+2025-08-11 08:48:47,179 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 08:48:47,217 - INFO - No more pages found
+2025-08-11 08:48:47,219 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 08:48:47,221 - INFO - Combined data: 25 total rows
+2025-08-11 08:48:47,417 - INFO - Error saving data: Writing to Excel with MultiIndex columns and no index ('index'=False) is not yet implemented.
+2025-08-11 08:48:49,471 - INFO - Browser closed
+2025-08-11 08:51:14,426 - INFO - Initializing browser...
+2025-08-11 08:51:15,612 - INFO - Browser initialized successfully
+2025-08-11 08:51:15,614 - INFO - Loading page (attempt 1): https://www.analog.com/en/parametricsearch/11070#/
+2025-08-11 08:51:16,787 - INFO - Page loaded successfully
+2025-08-11 08:51:16,789 - INFO - Processing page 1
+2025-08-11 08:51:16,873 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 08:51:16,905 - INFO - No more pages found
+2025-08-11 08:51:16,906 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 08:51:16,908 - INFO - Combined data: 25 total rows
+2025-08-11 08:51:17,113 - INFO - Excel file saved: output\scraped_tables.xlsx
+2025-08-11 08:51:19,197 - INFO - Browser closed
+2025-08-11 08:58:21,370 - INFO - Initializing browser...
+2025-08-11 08:58:22,612 - INFO - Browser initialized successfully
+2025-08-11 08:58:22,613 - INFO - Loading page (attempt 1): https://www.analog.com/en/parametricsearch/11070#/
+2025-08-11 08:58:24,168 - INFO - Page loaded successfully
+2025-08-11 08:58:24,170 - INFO - Processing page 1
+2025-08-11 08:58:24,246 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 08:58:24,493 - INFO - No next button found with any selector
+2025-08-11 08:58:24,496 - INFO - No more pages found
+2025-08-11 08:58:24,498 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 08:58:24,500 - INFO - Combined data: 25 total rows
+2025-08-11 08:58:24,707 - INFO - Excel file saved: output\scraped_tables.xlsx
+2025-08-11 08:58:26,800 - INFO - Browser closed

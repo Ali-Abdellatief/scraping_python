@@ -48,7 +48,17 @@ class TableScraperConfig:
             "//a[contains(text(), 'Next')]",
             "//button[contains(text(), 'Next')]",
             "//a[contains(@class, 'next')]",
-            "//button[contains(@class, 'next')]"
+            "//button[contains(@class, 'next')]",
+            "//a[contains(@class, 'pagination')]//span[contains(text(), 'Next')]",
+            "//li[contains(@class, 'next')]//a",
+            "//a[contains(@aria-label, 'Next')]",
+            "//button[contains(@aria-label, 'Next')]",
+            "//a[contains(@title, 'Next')]",
+            "//button[contains(@title, 'Next')]",
+            "//a[contains(@id, 'next')]",
+            "//button[contains(@id, 'next')]",
+            "//a[contains(@name, 'next')]",
+            "//button[contains(@name, 'next')]"
         ]
 
 
@@ -192,12 +202,16 @@ class EnhancedTableScraper:
                     if df_list:
                         df = df_list[0]
                         
-                        df['source_page'] = page_num
-                        df['source_url'] = self.driver.current_url
-                        df['scraped_at'] = pd.Timestamp.now()
-                        
-                        page_dataframes.append(df)
-                        self.update_status(f"Extracted table {table_idx + 1} from page {page_num} ({len(df)} rows)")
+                        # Check if this table has meaningful data (not just headers)
+                        if len(df) > 1:  # More than just header row
+                            df['source_page'] = page_num
+                            df['source_url'] = self.driver.current_url
+                            df['scraped_at'] = pd.Timestamp.now()
+                            
+                            page_dataframes.append(df)
+                            self.update_status(f"Extracted table {table_idx + 1} from page {page_num} ({len(df)} rows)")
+                        else:
+                            self.update_status(f"Skipping table {table_idx + 1} on page {page_num} - no data rows")
                         
                 except Exception as e:
                     self.update_status(f"Error parsing table {table_idx + 1} on page {page_num}: {e}")
@@ -229,11 +243,16 @@ class EnhancedTableScraper:
                 if (element.is_enabled() and 
                     element.is_displayed() and 
                     "disabled" not in element.get_attribute("class").lower()):
+                    
+                    # Log which selector worked for debugging
+                    self.update_status(f"Found next button using selector: {selector}")
+                    self.update_status(f"Button text: '{element.text}', enabled: {element.is_enabled()}")
                     return element
                     
             except NoSuchElementException:
                 continue
                 
+        self.update_status("No next button found with any selector")
         return None
     
     def has_next_page(self) -> Tuple[bool, Optional[object]]:
@@ -249,6 +268,10 @@ class EnhancedTableScraper:
                 return False, None
                 
             if next_button.get_attribute("disabled"):
+                return False, None
+                
+            # Check if button is actually clickable
+            if not next_button.is_enabled() or not next_button.is_displayed():
                 return False, None
                 
             return True, next_button
@@ -267,6 +290,7 @@ class EnhancedTableScraper:
             return False
             
         page_num = 1
+        previous_data_hash = None
         
         while not self.should_stop:
             self.update_status(f"Processing page {page_num}")
@@ -275,6 +299,15 @@ class EnhancedTableScraper:
             self.take_screenshot(page_num)
             
             page_tables = self.extract_tables_from_page(page_num)
+            
+            # Check if we're getting new data (not duplicates)
+            if page_tables:
+                current_data_hash = hash(str(page_tables[0].values.tobytes()))
+                if current_data_hash == previous_data_hash:
+                    self.update_status(f"Warning: Page {page_num} appears to have duplicate data. Pagination may not be working.")
+                    # Still add the data but warn the user
+                previous_data_hash = current_data_hash
+            
             self.all_data.extend(page_tables)
             
             if self.config.max_pages and page_num >= self.config.max_pages:
@@ -287,13 +320,35 @@ class EnhancedTableScraper:
                 break
                 
             try:
+                # Store current table row count to detect changes
+                current_table = self.driver.find_element(By.TAG_NAME, "table")
+                current_rows = len(current_table.find_elements(By.TAG_NAME, "tr"))
+                
+                self.update_status(f"Clicking next button to load page {page_num + 1}")
                 next_button.click()
                 
-                self.wait.until(lambda driver: str(page_num + 1) in driver.current_url or 
-                               driver.find_element(By.TAG_NAME, "table"))
+                # Wait for the table to change (new data loaded)
+                def table_has_changed(driver):
+                    try:
+                        new_table = driver.find_element(By.TAG_NAME, "table")
+                        new_rows = len(new_table.find_elements(By.TAG_NAME, "tr"))
+                        # Wait for either row count to change or some time to pass
+                        return new_rows != current_rows
+                    except:
+                        return False
+                
+                # Wait for table to change with timeout
+                try:
+                    WebDriverWait(self.driver, 10).until(table_has_changed)
+                    self.update_status(f"Page {page_num + 1} loaded successfully")
+                except TimeoutException:
+                    self.update_status(f"Timeout waiting for page {page_num + 1} to load")
+                    # Still continue, might be same number of rows
+                
+                # Additional wait to ensure JavaScript has finished loading
+                time.sleep(2)
                 
                 page_num += 1
-                time.sleep(1)
                 
             except Exception as e:
                 self.update_status(f"Error navigating to next page: {e}")
@@ -329,15 +384,37 @@ class EnhancedTableScraper:
             self.update_status(f"Error saving data: {e}")
             return False
     
+    def flatten_multiindex_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Flatten MultiIndex columns by joining levels with spaces"""
+        if isinstance(df.columns, pd.MultiIndex):
+            # Create new column names by joining MultiIndex levels with spaces
+            new_columns = []
+            for col in df.columns:
+                if isinstance(col, tuple):
+                    # Join tuple elements with spaces and clean up
+                    new_col = ' '.join(str(level).strip() for level in col if str(level).strip())
+                    new_columns.append(new_col)
+                else:
+                    new_columns.append(str(col))
+            
+            # Create a copy of the dataframe with flattened columns
+            df_flattened = df.copy()
+            df_flattened.columns = new_columns
+            return df_flattened
+        return df
+    
     def save_excel(self, df: pd.DataFrame):
         """Save data to Excel with multiple sheets"""
         excel_path = Path(self.config.output_directory) / f"{self.config.output_file}.xlsx"
         
+        # Flatten MultiIndex columns before saving
+        df_flattened = self.flatten_multiindex_columns(df)
+        
         with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name="All_Data", index=False)
+            df_flattened.to_excel(writer, sheet_name="All_Data", index=False)
             
-            for page_num in sorted(df['source_page'].unique()):
-                page_data = df[df['source_page'] == page_num]
+            for page_num in sorted(df_flattened['source_page'].unique()):
+                page_data = df_flattened[df_flattened['source_page'] == page_num]
                 sheet_name = f"Page_{page_num}"
                 page_data.to_excel(writer, sheet_name=sheet_name, index=False)
                 
