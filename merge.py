@@ -13,14 +13,15 @@ class ExcelCombiner:
         self.source_column_name = "Source_File"
         
     def select_multiple_files(self):
-        """Open file dialog to select multiple Excel files"""
+        """Open file dialog to select multiple Excel/CSV files"""
         root = tk.Tk()
         root.withdraw()  # Hide the main window
         
         file_paths = filedialog.askopenfilenames(
-            title="Select Excel Files to Combine",
+            title="Select Files to Combine (Excel/CSV)",
             filetypes=[
                 ("Excel files", "*.xlsx *.xls"),
+                ("CSV files", "*.csv"),
                 ("All files", "*.*")
             ]
         )
@@ -28,22 +29,22 @@ class ExcelCombiner:
         return list(file_paths) if file_paths else []
     
     def select_folder_files(self):
-        """Select all Excel files from a folder"""
+        """Select all Excel/CSV files from a folder"""
         root = tk.Tk()
         root.withdraw()
         
-        folder_path = filedialog.askdirectory(title="Select Folder Containing Excel Files")
+        folder_path = filedialog.askdirectory(title="Select Folder Containing Excel/CSV Files")
         root.destroy()
         
         if not folder_path:
             return []
         
-        # Find all Excel files in the folder
-        excel_files = []
-        for pattern in ['*.xlsx', '*.xls']:
-            excel_files.extend(glob.glob(os.path.join(folder_path, pattern)))
+        # Find all Excel/CSV files in the folder
+        found_files = []
+        for pattern in ['*.xlsx', '*.xls', '*.csv']:
+            found_files.extend(glob.glob(os.path.join(folder_path, pattern)))
         
-        return excel_files
+        return found_files
     
     def get_file_selection_method(self):
         """Dialog to choose file selection method"""
@@ -66,7 +67,7 @@ class ExcelCombiner:
             root.quit()
         
         # Title
-        tk.Label(root, text="How would you like to select Excel files?", 
+        tk.Label(root, text="How would you like to select files (Excel/CSV)?", 
                 font=("Arial", 12, "bold")).pack(pady=20)
         
         # Buttons frame
@@ -129,15 +130,15 @@ class ExcelCombiner:
                 font=("Arial", 14, "bold")).pack(pady=(0, 10))
         
         # File tree
-        columns = ("File Name", "Sheet Count", "Rows", "Columns", "Size")
+        columns = ("File Name", "Type/Sheets", "Rows", "Columns", "Size")
         file_tree = ttk.Treeview(main_frame, columns=columns, show="headings", height=12)
         
         for col in columns:
             file_tree.heading(col, text=col)
         
         # Set column widths
-        file_tree.column("File Name", width=200)
-        file_tree.column("Sheet Count", width=80)
+        file_tree.column("File Name", width=260)
+        file_tree.column("Type/Sheets", width=100)
         file_tree.column("Rows", width=80)
         file_tree.column("Columns", width=80)
         file_tree.column("Size", width=80)
@@ -156,31 +157,42 @@ class ExcelCombiner:
         # Populate tree with file info
         for file_path in file_paths:
             try:
-                # Get basic file info
                 file_name = os.path.basename(file_path)
                 file_size = f"{os.path.getsize(file_path) / 1024:.1f} KB"
+                lower = file_path.lower()
                 
-                # Try to get Excel info
-                try:
-                    excel_file = pd.ExcelFile(file_path)
-                    sheet_count = len(excel_file.sheet_names)
-                    
-                    # Read first sheet to get dimensions
-                    df_sample = pd.read_excel(file_path, nrows=0)  # Just get column info
-                    df_full = pd.read_excel(file_path)  # Get row count
-                    
-                    rows = len(df_full)
-                    columns = len(df_sample.columns)
-                    
-                except Exception:
-                    sheet_count = "Error"
-                    rows = "Error"
-                    columns = "Error"
+                if lower.endswith(('.xlsx', '.xls')):
+                    try:
+                        excel_file = pd.ExcelFile(file_path)
+                        sheet_count = len(excel_file.sheet_names)
+                        df_sample = pd.read_excel(file_path, nrows=0)
+                        df_full = pd.read_excel(file_path)
+                        rows = len(df_full)
+                        columns = len(df_sample.columns)
+                        type_or_sheets = f"Excel ({sheet_count})"
+                    except Exception:
+                        type_or_sheets = "Excel (err)"
+                        rows = "Error"
+                        columns = "Error"
+                elif lower.endswith('.csv'):
+                    try:
+                        df_sample = pd.read_csv(file_path, nrows=0)
+                        df_full = pd.read_csv(file_path)
+                        rows = len(df_full)
+                        columns = len(df_sample.columns)
+                        type_or_sheets = "CSV"
+                    except Exception:
+                        type_or_sheets = "CSV (err)"
+                        rows = "Error"
+                        columns = "Error"
+                else:
+                    type_or_sheets = "Unknown"
+                    rows = "-"
+                    columns = "-"
                 
-                # Store full path in values for removal functionality
-                file_tree.insert("", tk.END, values=(file_path, sheet_count, rows, columns, file_size))
+                file_tree.insert("", tk.END, values=(file_path, type_or_sheets, rows, columns, file_size))
                 
-            except Exception as e:
+            except Exception:
                 file_tree.insert("", tk.END, values=(file_path, "Error", "Error", "Error", "Error"))
         
         # Summary label
@@ -228,7 +240,7 @@ class ExcelCombiner:
             root.quit()
         
         # Title
-        tk.Label(root, text="Excel Combination Options", 
+        tk.Label(root, text="File Combination Options (Excel/CSV)", 
                 font=("Arial", 14, "bold")).pack(pady=10)
         
         # Main options frame
@@ -306,16 +318,22 @@ class ExcelCombiner:
         return options if proceed[0] else None
     
     def combine_files(self, file_paths, options):
-        """Combine the selected Excel files"""
+        """Combine the selected Excel/CSV files"""
         combined_data = []
         processing_log = []
         
         for i, file_path in enumerate(file_paths):
             try:
                 processing_log.append(f"Processing: {os.path.basename(file_path)}")
+                lower = file_path.lower()
                 
-                # Read the Excel file
-                df = pd.read_excel(file_path)
+                # Read the file based on extension
+                if lower.endswith(('.xlsx', '.xls')):
+                    df = pd.read_excel(file_path)
+                elif lower.endswith('.csv'):
+                    df = pd.read_csv(file_path)
+                else:
+                    raise ValueError("Unsupported file type")
                 
                 # Add source column if requested
                 if options['add_source_column']:
@@ -415,13 +433,13 @@ class ExcelCombiner:
         
         return proceed[0]
     
-    def select_output_location(self, default_name="combined_excel_files.xlsx"):
-        """Dialog to select output file location and name"""
+    def select_output_location(self, default_name="combined_files.xlsx"):
+        """Dialog to select output file location and name (Excel)"""
         root = tk.Tk()
         root.withdraw()
         
         output_path = filedialog.asksaveasfilename(
-            title="Save Combined Excel File As",
+            title="Save Combined File As",
             defaultextension=".xlsx",
             initialfile=default_name,
             filetypes=[
@@ -433,8 +451,8 @@ class ExcelCombiner:
         return output_path
     
     def run_interactive(self):
-        """Run the interactive Excel combiner"""
-        print("=== Interactive Excel File Combiner ===\n")
+        """Run the interactive file combiner (Excel/CSV inputs, Excel output)"""
+        print("=== Interactive File Combiner (Excel/CSV) ===\n")
         
         # Step 1: Choose file selection method
         print("Step 1: Choose file selection method...")

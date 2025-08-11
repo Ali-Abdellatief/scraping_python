@@ -74,3 +74,190 @@
 2025-08-11 08:58:24,500 - INFO - Combined data: 25 total rows
 2025-08-11 08:58:24,707 - INFO - Excel file saved: output\scraped_tables.xlsx
 2025-08-11 08:58:26,800 - INFO - Browser closed
+2025-08-11 11:41:19,377 - INFO - Initializing browser...
+2025-08-11 11:41:20,926 - INFO - Browser initialized successfully
+2025-08-11 11:41:20,931 - INFO - Loading page (attempt 1): https://www.hitachienergy.com/de/de/products-and-solutions/semiconductors/e-mobility-modules
+2025-08-11 11:41:24,531 - INFO - Page loaded successfully
+2025-08-11 11:41:24,534 - INFO - Processing page 1
+2025-08-11 11:41:24,623 - INFO - Extracted table 1 from page 1 (3 rows)
+2025-08-11 11:41:24,630 - INFO - Extracted table 2 from page 1 (3 rows)
+2025-08-11 11:41:24,718 - INFO - No next button found with any selector
+2025-08-11 11:41:24,719 - INFO - No more pages found
+2025-08-11 11:41:24,721 - INFO - Scraping completed. Processed 1 pages, extracted 2 tables
+2025-08-11 11:41:24,724 - INFO - Combined data: 6 total rows
+2025-08-11 11:41:24,948 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\Sic power module\Hitachi\hitahchi750.xlsx
+2025-08-11 11:41:27,038 - INFO - Browser closed
+2025-08-11 11:47:14,095 - INFO - Initializing browser...
+2025-08-11 11:47:15,341 - INFO - Browser initialized successfully
+2025-08-11 11:47:15,347 - INFO - Loading page (attempt 1): https://www.wolfspeed.com/products/power/sic-power-modules/wolfspeed-wolfpack-sic-power-modules-family/#parametric-data
+2025-08-11 11:47:16,115 - INFO - Page loaded successfully
+2025-08-11 11:47:16,117 - INFO - Processing page 1
+2025-08-11 11:47:16,239 - INFO - Extracted table 1 from page 1 (38 rows)
+2025-08-11 11:47:16,250 - INFO - Extracted table 2 from page 1 (25 rows)
+2025-08-11 11:47:16,417 - INFO - No next button found with any selector
+2025-08-11 11:47:16,419 - INFO - No more pages found
+2025-08-11 11:47:16,420 - INFO - Scraping completed. Processed 1 pages, extracted 2 tables
+2025-08-11 11:47:16,423 - INFO - Combined data: 63 total rows
+2025-08-11 11:47:16,667 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\Sic power module\wolfspeed\wolfspeed.xlsx
+2025-08-11 11:47:18,786 - INFO - Browser closed
+2025-08-11 11:50:32,670 - INFO - Initializing browser...
+2025-08-11 11:50:33,879 - INFO - Browser initialized successfully
+2025-08-11 11:50:33,885 - INFO - Loading page (attempt 1): https://www.microchip.com/en-us/parametric-search.html/427?filters=JTdCJTIyY2F0ZWdvcnlkcm9wZG93biUyMiUzQSU1QiUyMlBvd2VyJTIwTWFuYWdlbWVudCUyMiUyQyUyMkhpZ2glMjBWb2x0YWdlJTIwUG93ZXIlMjBNb2R1bGVzJTIyJTJDJTIyU2lDJTIwTU9TRkVUJTIwTW9kdWxlcyUyMiU1RCU3RA==
+2025-08-11 11:51:04,408 - INFO - Timeout loading page (attempt 1)
+2025-08-11 11:51:06,418 - INFO - Loading page (attempt 2): https://www.microchip.com/en-us/parametric-search.html/427?filters=JTdCJTIyY2F0ZWdvcnlkcm9wZG93biUyMiUzQSU1QiUyMlBvd2VyJTIwTWFuYWdlbWVudCUyMiUyQyUyMkhpZ2glMjBWb2x0YWdlJTIwUG93ZXIlMjBNb2R1bGVzJTIyJTJDJTIyU2lDJTIwTU9TRkVUJTIwTW9kdWxlcyUyMiU1RCU3RA==
+2025-08-11 11:51:36,933 - INFO - Timeout loading page (attempt 2)
+2025-08-11 11:51:38,941 - INFO - Loading page (attempt 3): https://www.microchip.com/en-us/parametric-search.html/427?filters=JTdCJTIyY2F0ZWdvcnlkcm9wZG93biUyMiUzQSU1QiUyMlBvd2VyJTIwTWFuYWdlbWVudCUyMiUyQyUyMkhpZ2glMjBWb2x0YWdlJTIwUG93ZXIlMjBNb2R1bGVzJTIyJTJDJTIyU2lDJTIwTU9TRkVUJTIwTW9kdWxlcyUyMiU1RCU3RA==
+2025-08-11 11:51:49,377 - INFO - Stopping scraper...
+2025-08-11 11:52:09,492 - INFO - Timeout loading page (attempt 3)
+2025-08-11 11:52:09,493 - INFO - Failed to load page after all retry attempts
+2025-08-11 11:52:11,626 - INFO - Browser closed
+2025-08-11 11:54:50,608 - INFO - Initializing browser...
+2025-08-11 11:54:51,839 - INFO - Browser initialized successfully
+2025-08-11 11:54:51,840 - INFO - Loading page (attempt 1): https://www.mitsubishielectric.com/semiconductors/powerdevices/topics/sic/
+2025-08-11 11:54:54,866 - INFO - Page loaded successfully
+2025-08-11 11:54:54,868 - INFO - Processing page 1
+2025-08-11 11:54:54,906 - INFO - Extracted table 1 from page 1 (8 rows)
+2025-08-11 11:54:54,916 - INFO - Extracted table 2 from page 1 (11 rows)
+2025-08-11 11:54:54,923 - INFO - Extracted table 3 from page 1 (9 rows)
+2025-08-11 11:54:54,933 - INFO - Extracted table 4 from page 1 (7 rows)
+2025-08-11 11:54:54,939 - INFO - Extracted table 5 from page 1 (4 rows)
+2025-08-11 11:54:54,945 - INFO - Extracted table 6 from page 1 (4 rows)
+2025-08-11 11:54:54,952 - INFO - Extracted table 7 from page 1 (3 rows)
+2025-08-11 11:54:55,099 - INFO - No next button found with any selector
+2025-08-11 11:54:55,100 - INFO - No more pages found
+2025-08-11 11:54:55,101 - INFO - Scraping completed. Processed 1 pages, extracted 7 tables
+2025-08-11 11:54:55,103 - INFO - Combined data: 46 total rows
+2025-08-11 11:54:55,150 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\Sic power module\Mitsubishi Electric\mitsubushi.xlsx
+2025-08-11 11:54:57,270 - INFO - Browser closed
+2025-08-11 13:03:03,991 - INFO - Initializing browser...
+2025-08-11 13:03:05,525 - INFO - Browser initialized successfully
+2025-08-11 13:03:05,529 - INFO - Loading page (attempt 1): https://www.semikron-danfoss.com/products/power-modules/power-modules-by-chip-technology/sic-modules
+2025-08-11 13:03:07,760 - INFO - Page loaded successfully
+2025-08-11 13:03:07,762 - INFO - Processing page 1
+2025-08-11 13:03:07,838 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 13:03:07,971 - INFO - No next button found with any selector
+2025-08-11 13:03:07,972 - INFO - No more pages found
+2025-08-11 13:03:07,973 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 13:03:07,974 - INFO - Combined data: 25 total rows
+2025-08-11 13:03:08,019 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\Sic power module\Semikron Danfoss\Semkirson.xlsx
+2025-08-11 13:03:10,142 - INFO - Browser closed
+2025-08-11 13:03:22,356 - INFO - Initializing browser...
+2025-08-11 13:03:23,556 - INFO - Browser initialized successfully
+2025-08-11 13:03:23,561 - INFO - Loading page (attempt 1): https://www.semikron-danfoss.com/products/power-modules/power-modules-by-chip-technology/sic-modules?page=2
+2025-08-11 13:03:25,544 - INFO - Page loaded successfully
+2025-08-11 13:03:25,545 - INFO - Processing page 1
+2025-08-11 13:03:25,639 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 13:03:25,753 - INFO - No next button found with any selector
+2025-08-11 13:03:25,755 - INFO - No more pages found
+2025-08-11 13:03:25,756 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 13:03:25,757 - INFO - Combined data: 25 total rows
+2025-08-11 13:03:25,800 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\Sic power module\Semikron Danfoss\Semkirson.xlsx
+2025-08-11 13:03:27,897 - INFO - Browser closed
+2025-08-11 13:03:54,835 - INFO - Initializing browser...
+2025-08-11 13:03:56,056 - INFO - Browser initialized successfully
+2025-08-11 13:03:56,061 - INFO - Loading page (attempt 1): https://www.semikron-danfoss.com/products/power-modules/power-modules-by-chip-technology/sic-modules
+2025-08-11 13:03:58,277 - INFO - Page loaded successfully
+2025-08-11 13:03:58,278 - INFO - Processing page 1
+2025-08-11 13:03:58,352 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 13:03:58,459 - INFO - No next button found with any selector
+2025-08-11 13:03:58,459 - INFO - No more pages found
+2025-08-11 13:03:58,460 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 13:03:58,460 - INFO - Combined data: 25 total rows
+2025-08-11 13:03:58,500 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\Sic power module\Semikron Danfoss\Semkirson.xlsx
+2025-08-11 13:04:00,593 - INFO - Browser closed
+2025-08-11 13:04:20,993 - INFO - Initializing browser...
+2025-08-11 13:04:22,207 - INFO - Browser initialized successfully
+2025-08-11 13:04:22,212 - INFO - Loading page (attempt 1): https://www.semikron-danfoss.com/products/power-modules/power-modules-by-chip-technology/sic-modules?page=2
+2025-08-11 13:04:24,215 - INFO - Page loaded successfully
+2025-08-11 13:04:24,216 - INFO - Processing page 1
+2025-08-11 13:04:24,296 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 13:04:24,408 - INFO - No next button found with any selector
+2025-08-11 13:04:24,409 - INFO - No more pages found
+2025-08-11 13:04:24,409 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 13:04:24,410 - INFO - Combined data: 25 total rows
+2025-08-11 13:04:24,450 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\Sic power module\Semikron Danfoss\Semkirson2.xlsx
+2025-08-11 13:04:26,557 - INFO - Browser closed
+2025-08-11 13:04:43,193 - INFO - Initializing browser...
+2025-08-11 13:04:44,419 - INFO - Browser initialized successfully
+2025-08-11 13:04:44,424 - INFO - Loading page (attempt 1): https://www.semikron-danfoss.com/products/power-modules/power-modules-by-chip-technology/sic-modules?page=3
+2025-08-11 13:04:46,788 - INFO - Page loaded successfully
+2025-08-11 13:04:46,790 - INFO - Processing page 1
+2025-08-11 13:04:46,861 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 13:04:46,974 - INFO - No next button found with any selector
+2025-08-11 13:04:46,976 - INFO - No more pages found
+2025-08-11 13:04:46,977 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 13:04:46,978 - INFO - Combined data: 25 total rows
+2025-08-11 13:04:47,029 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\Sic power module\Semikron Danfoss\Semkirson3.xlsx
+2025-08-11 13:04:49,171 - INFO - Browser closed
+2025-08-11 14:34:33,481 - INFO - Initializing browser...
+2025-08-11 14:34:35,132 - INFO - Browser initialized successfully
+2025-08-11 14:34:35,138 - INFO - Loading page (attempt 1): https://www.hitachienergy.com/products-and-solutions/semiconductors/insulated-gate-bipolar-transistor-igbt-and-diode-modules#tab-tabs-e5d8090fa9-item-b3078eeac7
+2025-08-11 14:34:36,352 - INFO - Page loaded successfully
+2025-08-11 14:34:36,354 - INFO - Processing page 1
+2025-08-11 14:34:36,456 - INFO - Extracted table 1 from page 1 (5 rows)
+2025-08-11 14:34:36,472 - INFO - Extracted table 2 from page 1 (29 rows)
+2025-08-11 14:34:36,479 - INFO - Extracted table 3 from page 1 (3 rows)
+2025-08-11 14:34:36,493 - INFO - Extracted table 4 from page 1 (20 rows)
+2025-08-11 14:34:36,503 - INFO - Extracted table 5 from page 1 (16 rows)
+2025-08-11 14:34:36,512 - INFO - Extracted table 6 from page 1 (8 rows)
+2025-08-11 14:34:36,906 - INFO - No next button found with any selector
+2025-08-11 14:34:36,907 - INFO - No more pages found
+2025-08-11 14:34:36,908 - INFO - Scraping completed. Processed 1 pages, extracted 6 tables
+2025-08-11 14:34:36,911 - INFO - Combined data: 81 total rows
+2025-08-11 14:34:37,114 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\IGBT modules\Hitachi\Hitachi.xlsx
+2025-08-11 14:34:39,929 - INFO - Browser closed
+2025-08-11 14:48:47,807 - INFO - Initializing browser...
+2025-08-11 14:48:49,107 - INFO - Browser initialized successfully
+2025-08-11 14:48:49,127 - INFO - Loading page (attempt 1): https://www.mitsubishielectric.com/semiconductors/powerdevices/products/power-module/
+2025-08-11 14:49:16,490 - INFO - Stopping scraper...
+2025-08-11 14:49:24,939 - INFO - Timeout loading page (attempt 1)
+2025-08-11 14:49:29,040 - INFO - Browser closed
+2025-08-11 14:49:32,136 - INFO - Initializing browser...
+2025-08-11 14:49:33,353 - INFO - Browser initialized successfully
+2025-08-11 14:49:33,359 - INFO - Loading page (attempt 1): https://www.mitsubishielectric.com/semiconductors/powerdevices/products/power-module/igbt-module-3level/
+2025-08-11 14:49:44,154 - INFO - Page loaded successfully
+2025-08-11 14:49:44,156 - INFO - Processing page 1
+2025-08-11 14:49:44,192 - INFO - Extracted table 1 from page 1 (11 rows)
+2025-08-11 14:49:44,200 - INFO - Extracted table 2 from page 1 (6 rows)
+2025-08-11 14:49:44,206 - INFO - Extracted table 3 from page 1 (4 rows)
+2025-08-11 14:49:44,212 - INFO - Extracted table 4 from page 1 (5 rows)
+2025-08-11 14:49:44,297 - INFO - No next button found with any selector
+2025-08-11 14:49:44,299 - INFO - No more pages found
+2025-08-11 14:49:44,301 - INFO - Scraping completed. Processed 1 pages, extracted 4 tables
+2025-08-11 14:49:44,302 - INFO - Combined data: 26 total rows
+2025-08-11 14:49:44,342 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\IGBT modules\Mitsubishi Electric\mutsbeshi.xlsx
+2025-08-11 14:49:46,433 - INFO - Browser closed
+2025-08-11 15:28:59,642 - INFO - Initializing browser...
+2025-08-11 15:29:00,912 - INFO - Browser initialized successfully
+2025-08-11 15:29:00,919 - INFO - Loading page (attempt 1): https://www.mouser.de/c/semiconductors/discrete-semiconductors/transistors/igbt-modules/?srsltid=AfmBOopuIZfkQy5rlph5pwEAfAh1nb23FE9FRWnXOapVrB_0qE7SV1Ld
+2025-08-11 15:29:20,444 - INFO - Timeout loading page (attempt 1)
+2025-08-11 15:29:22,451 - INFO - Loading page (attempt 2): https://www.mouser.de/c/semiconductors/discrete-semiconductors/transistors/igbt-modules/?srsltid=AfmBOopuIZfkQy5rlph5pwEAfAh1nb23FE9FRWnXOapVrB_0qE7SV1Ld
+2025-08-11 15:29:30,002 - INFO - Stopping scraper...
+2025-08-11 15:29:40,970 - INFO - Timeout loading page (attempt 2)
+2025-08-11 15:29:45,247 - INFO - Browser closed
+2025-08-11 16:04:00,063 - INFO - Initializing browser...
+2025-08-11 16:04:01,625 - INFO - Browser initialized successfully
+2025-08-11 16:04:01,630 - INFO - Loading page (attempt 1): https://www.semikron-danfoss.com/products/power-modules/power-modules-by-chip-technology/igbt-modules?hitsPerPage=100
+2025-08-11 16:04:03,993 - INFO - Page loaded successfully
+2025-08-11 16:04:03,995 - INFO - Processing page 1
+2025-08-11 16:04:04,150 - INFO - Extracted table 1 from page 1 (25 rows)
+2025-08-11 16:04:04,330 - INFO - No next button found with any selector
+2025-08-11 16:04:04,331 - INFO - No more pages found
+2025-08-11 16:04:04,332 - INFO - Scraping completed. Processed 1 pages, extracted 1 tables
+2025-08-11 16:04:04,333 - INFO - Combined data: 25 total rows
+2025-08-11 16:04:04,626 - INFO - Excel file saved: C:\Users\nx369108\OneDrive - Nexperia\Desktop\BOM\BOM\IGBT modules\Semikron Danfoss\output1.xlsx
+2025-08-11 16:04:06,721 - INFO - Browser closed
+2025-08-11 16:10:31,113 - INFO - Initializing browser...
+2025-08-11 16:10:32,337 - INFO - Browser initialized successfully
+2025-08-11 16:10:32,343 - INFO - Loading page (attempt 1): https://www.semikron-danfoss.com/products/power-modules/power-modules-by-chip-technology/igbt-modules?hitsPerPage=100
+2025-08-11 16:10:34,526 - INFO - Page loaded successfully
+2025-08-11 16:10:34,530 - INFO - Detected Semikron listing. Using product-card extractor.
+2025-08-11 16:10:34,531 - INFO - Loading all products (scrolling and expanding results)...
+2025-08-11 16:10:37,858 - INFO - Visible products: 3
+2025-08-11 16:10:40,478 - INFO - Visible products: 3
+2025-08-11 16:10:43,141 - INFO - Visible products: 3
+2025-08-11 16:10:43,143 - INFO - Finished loading all products.
+2025-08-11 16:10:43,235 - INFO - Extracted 3 products.
+2025-08-11 16:10:43,237 - INFO - Combined data: 3 total rows
+2025-08-11 16:10:43,386 - INFO - Excel file saved: output\scraped_tables.xlsx
+2025-08-11 16:10:45,504 - INFO - Browser closed

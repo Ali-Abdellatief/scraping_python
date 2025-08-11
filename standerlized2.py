@@ -16,8 +16,11 @@ class MOSFETColumnMapper:
         "part no", "pn", "device", "type number", "partnumber", "type", "part number", 
         "p/n", "model", "type no", "type_number", "part_number", "typenum", "type_no"
     ],
-    "Manufacturer": [
+    "Manufacturer_real": [
         "manufacturer", "mfr", "brand", "company", "supplier", "vendor", "make", "maker"
+    ],
+    "Manufacturer_real": [
+        "manufacturer_real", "real_manufacturer", "actual_manufacturer", "true_manufacturer"
     ],
     "Description": ["desc", "product description"],
     "Lifecycle Status": [
@@ -123,6 +126,9 @@ class MOSFETColumnMapper:
     "RDSon [max] @ Tj = 175 °C (mΩ)": [
         "rdson 175c", "rdson@175c", "rdson_175c", "rdson high temp", 
         "rdson max 175c", "high temperature rdson"
+    ],
+    "RDSon [max] @ Tj = 25 °C (mΩ)": [
+        "rdson 25c", "rdson@25c", "rdson_25c", "rdson low temp", "low temperature rdson"
     ],
     "Tj [max] (°C)": [
         "tj", "junction temp", "junction temperature", "tj max", "tj_max", 
@@ -556,15 +562,23 @@ class MOSFETColumnMapper:
         return column_mapping, unmapped_columns, mapping_scores
 
     def process_excel_file(self, file_path, sheet_name=None, threshold=70, output_file=None):
-        """Process an Excel file and map its columns"""
+        """Process an Excel or CSV file and map its columns"""
         try:
-            # Read Excel file
-            if sheet_name:
-                df = pd.read_excel(file_path, sheet_name=sheet_name)
-            else:
-                df = pd.read_excel(file_path)
+            # Check if it's a CSV file
+            is_csv = file_path.lower().endswith('.csv')
             
-            print(f"Loaded Excel file: {file_path}")
+            # Read file based on type
+            if is_csv:
+                df = pd.read_csv(file_path)
+                print(f"Loaded CSV file: {file_path}")
+            else:
+                # Read Excel file
+                if sheet_name:
+                    df = pd.read_excel(file_path, sheet_name=sheet_name)
+                else:
+                    df = pd.read_excel(file_path)
+                print(f"Loaded Excel file: {file_path}")
+            
             print(f"Original columns: {len(df.columns)}")
             print("-" * 50)
             
@@ -591,8 +605,12 @@ class MOSFETColumnMapper:
             
             # Save to new file if output path provided
             if output_file:
-                mapped_df.to_excel(output_file, index=False)
-                print(f"\nMapped dataframe saved to: {output_file}")
+                if output_file.lower().endswith('.csv'):
+                    mapped_df.to_csv(output_file, index=False)
+                    print(f"\nMapped dataframe saved to: {output_file}")
+                else:
+                    mapped_df.to_excel(output_file, index=False)
+                    print(f"\nMapped dataframe saved to: {output_file}")
             
             return mapped_df, column_mapping, unmapped_columns, mapping_scores
             
@@ -606,14 +624,15 @@ class InteractiveColumnMapper:
         self.root = None
         
     def select_input_file(self):
-        """Open file dialog to select input Excel file"""
+        """Open file dialog to select input Excel or CSV file"""
         root = tk.Tk()
         root.withdraw()  # Hide the main window
         
         file_path = filedialog.askopenfilename(
-            title="Select Input Excel File",
+            title="Select Input File (Excel or CSV)",
             filetypes=[
                 ("Excel files", "*.xlsx *.xls"),
+                ("CSV files", "*.csv"),
                 ("All files", "*.*")
             ]
         )
@@ -621,12 +640,17 @@ class InteractiveColumnMapper:
         return file_path
     
     def get_sheet_names(self, file_path):
-        """Get all sheet names from Excel file"""
+        """Get all sheet names from Excel file or return None for CSV"""
         try:
+            # Check if it's a CSV file
+            if file_path.lower().endswith('.csv'):
+                return ["CSV Data"]  # CSV files don't have sheets, so we create a dummy name
+            
+            # For Excel files, get actual sheet names
             excel_file = pd.ExcelFile(file_path)
             return excel_file.sheet_names
         except Exception as e:
-            print(f"Error reading Excel file: {str(e)}")
+            print(f"Error reading file: {str(e)}")
             return []
     
     def select_sheet_dialog(self, sheet_names):
@@ -648,6 +672,10 @@ class InteractiveColumnMapper:
         
         def on_cancel():
             root.quit()
+        
+        # Check if it's a CSV file (single sheet with dummy name)
+        if len(sheet_names) == 1 and sheet_names[0] == "CSV Data":
+            return "CSV Data"
         
         tk.Label(root, text="Select a sheet to process:", font=("Arial", 10)).pack(pady=10)
         
@@ -692,7 +720,7 @@ class InteractiveColumnMapper:
         return threshold if threshold is not None else 70
     
     def select_output_location(self, default_name):
-        """Dialog to select output file location and name"""
+        """Dialog to select output Excel file location and name"""
         root = tk.Tk()
         root.withdraw()
         
@@ -708,17 +736,38 @@ class InteractiveColumnMapper:
         root.destroy()
         return output_path
     
+    def select_csv_output_location(self, default_name):
+        """Dialog to select output CSV file location and name"""
+        root = tk.Tk()
+        root.withdraw()
+        
+        output_path = filedialog.asksaveasfilename(
+            title="Save Mapped CSV File As",
+            defaultextension=".csv",
+            initialfile=default_name,
+            filetypes=[
+                ("CSV files", "*.csv"),
+                ("All files", "*.*")
+            ]
+        )
+        root.destroy()
+        return output_path
+    
     def show_preview_dialog(self, df_formulas, column_mapping, unmapped_columns, mapping_scores):
         """Show preview of column mappings, allow editing, and copy hyperlinks."""
         root = tk.Tk()
         root.title("Column Mapping Preview & Edit")
-        root.geometry("850x650")
+        root.geometry("850x700")
 
         editable_mapping = column_mapping.copy()
         proceed = [False]
+        add_manufacturer_real = tk.BooleanVar(value=False)
 
         def on_proceed():
             proceed[0] = True
+            # Store the manufacturer selection and checkbox state
+            proceed.append(add_manufacturer_real.get())
+            proceed.append(manufacturer_var.get())
             root.quit()
 
         def on_cancel():
@@ -821,6 +870,37 @@ class InteractiveColumnMapper:
             unmapped_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
             unmapped_scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
+        # Add Manufacturer_real checkbox
+        manufacturer_frame = tk.Frame(root)
+        manufacturer_frame.pack(pady=5)
+        
+        tk.Checkbutton(manufacturer_frame, text="Add 'Manufacturer_real' column", 
+                      variable=add_manufacturer_real, font=("Arial", 10, "bold")).pack(side=tk.LEFT, padx=5)
+        
+        # Manufacturer selection dropdown
+        manufacturer_label = tk.Label(manufacturer_frame, text="Select Manufacturer:", font=("Arial", 10))
+        manufacturer_label.pack(side=tk.LEFT, padx=10)
+        
+        manufacturer_var = tk.StringVar(value="Texas Instruments")
+        manufacturer_dropdown = ttk.Combobox(manufacturer_frame, textvariable=manufacturer_var, 
+                                           values=["TI", "ADI", "Infineon", 
+                                                  "ST", "Onsemi", "Microchip", 
+                                                  "Broadcom", "NXP", "Toshiba", "Renesas Electronics",
+                                                  "Seiko Epson", "Marvell Technology", "Maxim Integrated", 
+                                                  "Mitsubishi Electric", "ABB", "Fuji Electric", "Semikron Danfoss",
+                                                  "Vishay", "Hitachi", "Littelfuse", "ROHM", "Custom..."])
+        manufacturer_dropdown.pack(side=tk.LEFT, padx=5)
+        
+        def on_manufacturer_change(event):
+            if manufacturer_var.get() == "Custom...":
+                custom_name = simpledialog.askstring("Custom Manufacturer", "Enter manufacturer name:")
+                if custom_name:
+                    manufacturer_var.set(custom_name)
+                else:
+                    manufacturer_var.set("TI")
+        
+        manufacturer_dropdown.bind("<<ComboboxSelected>>", on_manufacturer_change)
+        
         button_frame = tk.Frame(root)
         button_frame.pack(pady=10)
         
@@ -837,107 +917,186 @@ class InteractiveColumnMapper:
         root.mainloop()
         root.destroy()
         
-        return proceed[0], editable_mapping if proceed[0] else None
+        if proceed[0]:
+            return proceed[0], editable_mapping, proceed[1], proceed[2]  # proceed, mapping, add_manufacturer_real, manufacturer_name
+        else:
+            return proceed[0], None, None, None
     
     def run_interactive(self):
-        """Run the interactive version"""
+        """Run the interactive version continuously"""
         print("=== Interactive MOSFET Column Mapper ===\n")
+        print("🔄 Program will run continuously - process multiple files without restarting!\n")
         
-        # Step 1: Select input file
-        print("Step 1: Select input Excel file...")
-        input_file = self.select_input_file()
+        # Store settings for reuse
+        saved_threshold = 70
+        saved_manufacturer = "Texas Instruments"
+        saved_add_manufacturer_real = False
         
-        if not input_file:
-            print("No file selected. Exiting.")
-            return
-        
-        print(f"Selected: {os.path.basename(input_file)}")
-        
-        # Step 2: Get sheet names and let user select
-        print("\nStep 2: Reading Excel file...")
-        sheet_names = self.get_sheet_names(input_file)
-        
-        if not sheet_names:
-            print("Could not read Excel file or no sheets found.")
-            return
-        
-        selected_sheet = self.select_sheet_dialog(sheet_names)
-        if not selected_sheet:
-            print("No sheet selected. Exiting.")
-            return
-        
-        print(f"Selected sheet: {selected_sheet}")
-        
-        # Step 3: Get threshold
-        print("\nStep 3: Set matching threshold...")
-        threshold = self.get_threshold_dialog()
-        print(f"Threshold set to: {threshold}%")
-        
-        # Step 4: Load and analyze the file
-        print("\nStep 4: Analyzing columns...")
-        try:
-            # Read with openpyxl to get formulas
-            import openpyxl
-            workbook = openpyxl.load_workbook(input_file, data_only=False)
-            sheet = workbook[selected_sheet]
-            data = []
-            for row in sheet.iter_rows(values_only=True):
-                data.append(list(row))
-            df_formulas = pd.DataFrame(data[1:], columns=data[0])
+        while True:
+            print("=" * 60)
+            print("📁 Ready to process next Excel file...")
+            print("=" * 60)
+            
+            # Step 1: Select input file
+            print("\nStep 1: Select input Excel file...")
+            input_file = self.select_input_file()
+            
+            if not input_file:
+                print("No file selected. Exiting program.")
+                break
+            
+            print(f"Selected: {os.path.basename(input_file)}")
+            
+            # Step 2: Get sheet names and let user select
+            print("\nStep 2: Reading Excel file...")
+            sheet_names = self.get_sheet_names(input_file)
+            
+            if not sheet_names:
+                print("Could not read Excel file or no sheets found.")
+                continue
+            
+            selected_sheet = self.select_sheet_dialog(sheet_names)
+            if not selected_sheet:
+                print("No sheet selected. Skipping this file.")
+                continue
+            
+            print(f"Selected sheet: {selected_sheet}")
+            
+            # Step 3: Get threshold (with option to reuse previous)
+            print("\nStep 3: Set matching threshold...")
+            if saved_threshold is not None:
+                reuse_threshold = messagebox.askyesno("Reuse Settings", 
+                    f"Use previous threshold ({saved_threshold}%)?\n\nClick 'Yes' to reuse\nClick 'No' to set new threshold")
+                if reuse_threshold:
+                    threshold = saved_threshold
+                    print(f"Reusing previous threshold: {threshold}%")
+                else:
+                    threshold = self.get_threshold_dialog()
+                    saved_threshold = threshold
+            else:
+                threshold = self.get_threshold_dialog()
+                saved_threshold = threshold
+            
+            print(f"Threshold set to: {threshold}%")
+            
+            # Step 4: Load and analyze the file
+            print("\nStep 4: Analyzing columns...")
+            try:
+                # Check if it's a CSV file
+                is_csv = input_file.lower().endswith('.csv')
+                
+                if is_csv:
+                    # For CSV files, read directly with pandas
+                    df_values = pd.read_csv(input_file)
+                    # Create a dummy df_formulas for CSV (since no formulas)
+                    df_formulas = df_values.copy()
+                    print("Processing CSV file...")
+                else:
+                    # For Excel files, read with openpyxl to get formulas
+                    import openpyxl
+                    workbook = openpyxl.load_workbook(input_file, data_only=False)
+                    sheet = workbook[selected_sheet]
+                    data = []
+                    for row in sheet.iter_rows(values_only=True):
+                        data.append(list(row))
+                    df_formulas = pd.DataFrame(data[1:], columns=data[0])
 
-            # Read with pandas for values
-            df_values = pd.read_excel(input_file, sheet_name=selected_sheet)
+                    # Read with pandas for values
+                    df_values = pd.read_excel(input_file, sheet_name=selected_sheet)
+                    print("Processing Excel file...")
 
-            column_mapping, unmapped_columns, mapping_scores = self.mapper.map_columns(df_values, threshold)
+                column_mapping, unmapped_columns, mapping_scores = self.mapper.map_columns(df_values, threshold)
+                
+                print(f"Found {len(df_values.columns)} columns total")
+                print(f"Mapped: {len(column_mapping)} columns")
+                print(f"Unmapped: {len(unmapped_columns)} columns")
+                
+            except Exception as e:
+                print(f"Error processing file: {str(e)}")
+                messagebox.showerror("Error", f"Error processing file: {str(e)}")
+                continue
             
-            print(f"Found {len(df_values.columns)} columns total")
-            print(f"Mapped: {len(column_mapping)} columns")
-            print(f"Unmapped: {len(unmapped_columns)} columns")
+            # Step 5: Show preview and get confirmation
+            print("\nStep 5: Showing mapping preview...")
+            result = self.show_preview_dialog(df_formulas, column_mapping, unmapped_columns, mapping_scores)
+            proceed, final_mapping, add_manufacturer_real, manufacturer_name = result
             
-        except Exception as e:
-            print(f"Error processing file: {str(e)}")
-            messagebox.showerror("Error", f"Error processing file: {str(e)}")
-            return
-        
-        # Step 5: Show preview and get confirmation
-        print("\nStep 5: Showing mapping preview...")
-        proceed, final_mapping = self.show_preview_dialog(df_formulas, column_mapping, unmapped_columns, mapping_scores)
-        
-        if not proceed:
-            print("Operation cancelled by user.")
-            return
-        
-        # Step 6: Select output location
-        print("\nStep 6: Select output location...")
-        input_name = Path(input_file).stem
-        default_output = f"{input_name}_mapped.xlsx"
-        
-        output_file = self.select_output_location(default_output)
-        if not output_file:
-            print("No output location selected. Exiting.")
-            return
-        
-        print(f"Output file: {os.path.basename(output_file)}")
-        
-        # Step 7: Process and save
-        print("\nStep 7: Processing and saving...")
-        try:
-            mapped_df = df_values.rename(columns=final_mapping)
-            mapped_df.to_excel(output_file, index=False)
+            if not proceed:
+                print("Operation cancelled by user. Skipping this file.")
+                continue
             
-            print(f"\n✅ SUCCESS!")
-            print(f"Mapped file saved as: {output_file}")
-            print(f"Columns mapped: {len(final_mapping)}")
-            print(f"Threshold used: {threshold}%")
+            # Save settings for reuse
+            saved_manufacturer = manufacturer_name
+            saved_add_manufacturer_real = add_manufacturer_real
             
-            messagebox.showinfo("Success", 
-                              f"File processed successfully!\n\n"
-                              f"Mapped {len(final_mapping)} columns\n"
-                              f"Saved to: {os.path.basename(output_file)}")
+            # Step 6: Select output location
+            print("\nStep 6: Select output location...")
+            input_name = Path(input_file).stem
+            is_csv = input_file.lower().endswith('.csv')
             
-        except Exception as e:
-            print(f"Error saving file: {str(e)}")
-            messagebox.showerror("Error", f"Error saving file: {str(e)}")
+            if is_csv:
+                default_output = f"{input_name}_mapped.csv"
+                # For CSV files, show CSV save dialog
+                output_file = self.select_csv_output_location(default_output)
+            else:
+                default_output = f"{input_name}_mapped.xlsx"
+                # For Excel files, show Excel save dialog
+                output_file = self.select_output_location(default_output)
+            
+            if not output_file:
+                print("No output location selected. Skipping this file.")
+                continue
+            
+            print(f"Output file: {os.path.basename(output_file)}")
+            
+            # Step 7: Process and save
+            print("\nStep 7: Processing and saving...")
+            try:
+                mapped_df = df_values.rename(columns=final_mapping)
+                
+                # Add Manufacturer_real column if requested
+                if add_manufacturer_real:
+                    mapped_df['Manufacturer_real'] = manufacturer_name
+                    print(f"Added 'Manufacturer_real' column filled with: {manufacturer_name}")
+                
+                # Save based on output file extension
+                if output_file.lower().endswith('.csv'):
+                    mapped_df.to_csv(output_file, index=False)
+                    print("Saved as CSV file")
+                else:
+                    mapped_df.to_excel(output_file, index=False)
+                    print("Saved as Excel file")
+                
+                print(f"\n✅ SUCCESS!")
+                print(f"Mapped file saved as: {output_file}")
+                print(f"Columns mapped: {len(final_mapping)}")
+                if add_manufacturer_real:
+                    print(f"Manufacturer_real column added with value: {manufacturer_name}")
+                print(f"Threshold used: {threshold}%")
+                
+                success_message = f"File processed successfully!\n\nMapped {len(final_mapping)} columns\nSaved to: {os.path.basename(output_file)}"
+                if add_manufacturer_real:
+                    success_message += f"\nManufacturer_real column added with value: {manufacturer_name}"
+                
+                messagebox.showinfo("Success", success_message)
+                
+            except Exception as e:
+                print(f"Error saving file: {str(e)}")
+                messagebox.showerror("Error", f"Error saving file: {str(e)}")
+                continue
+            
+            # Ask if user wants to continue
+            print("\n" + "=" * 60)
+            continue_processing = messagebox.askyesno("Continue Processing", 
+                "File processed successfully! 🎉\n\nWould you like to process another Excel file?\n\n"
+                "Click 'Yes' to continue with next file\n"
+                "Click 'No' to exit program")
+            
+            if not continue_processing:
+                print("\n👋 Exiting program. Goodbye!")
+                break
+        
+        print("\nProgram finished.")
 
 def main():
     """Main function - choose between command line and interactive mode"""
@@ -949,7 +1108,15 @@ def main():
         output_file = sys.argv[4] if len(sys.argv) > 4 else None
         
         mapper = MOSFETColumnMapper()
-        result = mapper.process_excel_file(file_path, sheet_name, threshold, output_file)
+        
+        # Check if it's a CSV file
+        if file_path.lower().endswith('.csv'):
+            print(f"Processing CSV file: {file_path}")
+            # For CSV files, we don't need sheet_name
+            result = mapper.process_excel_file(file_path, None, threshold, output_file)
+        else:
+            print(f"Processing Excel file: {file_path}")
+            result = mapper.process_excel_file(file_path, sheet_name, threshold, output_file)
         
         if result[0] is not None:
             print(f"\nProcessing completed successfully!")
